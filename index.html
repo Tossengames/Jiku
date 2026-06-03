@@ -12,7 +12,7 @@
   --gold:#b8922a; --gold-b:#d4a83a; --gold-pale:#e8cc7a;
   --rust:#9e3a1e; --sage:#3d6b4a;
   --panel:#fdf8f2; --pb:rgba(184,146,42,0.15);
-  --tm:#1c1610; --tm2:rgba(28,22,16,0.55); --tm3:rgba(28,22,16,0.32);
+  --tm:#1c1610; --tm2:rgba(28,22,16,0.62); --tm3:rgba(28,22,16,0.58);
   --bg:#f5ede0;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -142,7 +142,7 @@ footer{padding:2.5rem 3rem;background:var(--ink);border-top:1px solid rgba(184,1
 .v-price{font-family:'Cinzel',serif;font-size:1.02rem;color:var(--gold)}
 
 .v-sec{padding:1.2rem 1.8rem;border-bottom:1px solid rgba(184,146,42,.07)}
-.v-sec-t{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.4em;color:rgba(184,146,42,.52);text-transform:uppercase;margin-bottom:.85rem;display:flex;align-items:center;gap:.8rem}
+.v-sec-t{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.4em;color:rgba(184,146,42,.82);text-transform:uppercase;margin-bottom:.85rem;display:flex;align-items:center;gap:.8rem}
 .v-sec-t::after{content:'';flex:1;height:1px;background:rgba(184,146,42,.1)}
 
 /* Swatches */
@@ -154,14 +154,14 @@ footer{padding:2.5rem 3rem;background:var(--ink);border-top:1px solid rgba(184,1
 
 /* Sizes */
 .sz-row{display:flex;flex-wrap:wrap;gap:.42rem}
-.sz-btn{padding:.3rem .72rem;border:1px solid rgba(184,146,42,.13);background:transparent;color:var(--tm3);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.07em;transition:all .3s;cursor:pointer}
+.sz-btn{padding:.3rem .72rem;border:1px solid rgba(184,146,42,.2);background:transparent;color:rgba(28,22,16,.65);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.07em;transition:all .3s;cursor:pointer}
 .sz-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(184,146,42,.04)}
 .sz-btn:hover{border-color:rgba(184,146,42,.38);color:var(--tm)}
 
 /* Control buttons */
 .ctrl-grid{display:flex;flex-wrap:wrap;gap:.4rem}
-.cb{padding:.3rem .68rem;border:1px solid rgba(184,146,42,.13);background:transparent;color:var(--tm3);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.07em;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
-.cb:hover{border-color:rgba(184,146,42,.38);color:var(--tm);background:rgba(184,146,42,.04)}
+.cb{padding:.3rem .68rem;border:1px solid rgba(184,146,42,.2);background:transparent;color:rgba(28,22,16,.65);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.07em;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+.cb:hover{border-color:rgba(184,146,42,.5);color:var(--tm);background:rgba(184,146,42,.06)}
 .cb.on{background:var(--gold);color:#fff;border-color:var(--gold)}
 
 /* Auto rotate — animated when ON */
@@ -172,15 +172,15 @@ footer{padding:2.5rem 3rem;background:var(--ink);border-top:1px solid rgba(184,1
 
 /* Sliders */
 .sl-wrap{margin-bottom:.82rem}
-.sl-lbl{display:flex;justify-content:space-between;font-size:.64rem;color:var(--tm3);margin-bottom:.38rem}
+.sl-lbl{display:flex;justify-content:space-between;font-size:.64rem;color:rgba(28,22,16,.62);margin-bottom:.38rem}
 .sl-lbl em{color:var(--gold);font-style:normal;font-family:'Cinzel',serif}
 input[type=range]{width:100%;-webkit-appearance:none;height:2px;background:rgba(184,146,42,.13);outline:none;border-radius:2px;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(184,146,42,.14),0 0 8px rgba(184,146,42,.38)}
 
 /* Info rows */
-.info-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(184,146,42,.05);font-size:.78rem}
+.info-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(184,146,42,.07);font-size:.78rem}
 .info-row:last-child{border-bottom:none}
-.ik{color:var(--tm3)}.iv{color:var(--tm);font-weight:400}
+.ik{color:rgba(28,22,16,.55);font-style:italic}.iv{color:var(--tm);font-weight:400}
 
 /* CTA */
 .v-cta{padding:1.4rem 1.8rem;margin-top:auto;background:#fff;border-top:1px solid rgba(184,146,42,.08)}
@@ -309,7 +309,7 @@ select.finp option{background:#faf6ef}
 <div id="viewer">
   <div class="v-scene">
     <canvas id="three-canvas"></canvas>
-    <div class="scene-hint" id="scene-hint">Drag to rotate · Scroll to zoom</div>
+    <div class="scene-hint" id="scene-hint">Drag to rotate · Scroll or pinch to zoom</div>
   </div>
   <div class="v-panel">
     <div class="v-hdr">
@@ -459,8 +459,9 @@ let scrollGroup=null,paintingMesh=null,rollerTopMesh=null,rollerBotMesh=null;
 let capMeshes=[],silkTopMesh=null,silkBotMesh=null;
 let ambientLight=null,pointLight1=null,pointLight2=null,rimLight=null;
 let autoRotating=false;
-let isDrag=false,prevMX=0,prevMY=0,touchX=0,touchY=0;
+let isDrag=false,prevMX=0,prevMY=0;
 let targetRotY=0,targetRotX=0.06,currentRotY=0,currentRotX=0.06;
+let targetZoom=4.5,currentZoom=4.5;
 const clock={last:0};
 
 // ─── PAINTING FUNCTIONS ──────────────────────────────────────────────────
@@ -564,7 +565,7 @@ function initThree(){
   threeRenderer.toneMappingExposure=1.35;
   threeScene=new THREE.Scene();
   threeCamera=new THREE.PerspectiveCamera(40,W/H,.01,100);
-  threeCamera.position.set(0,0,3.6);
+  threeCamera.position.set(0,0,4.5);
   buildScrollMesh();setupLights();setEnvBg('gallery');animateThree();
 }
 
@@ -580,8 +581,22 @@ function buildScrollMesh(){
   pos.needsUpdate=true;pg.computeVertexNormals();
   paintingMesh=new THREE.Mesh(pg,buildPaintMat());paintingMesh.receiveShadow=true;scrollGroup.add(paintingMesh);
 
+  // Back face — flipped plane visible when scroll rotates past 90°
+  const pgBack=new THREE.PlaneGeometry(pw,ph,12,24);
+  const posB=pgBack.attributes.position;
+  for(let i=0;i<posB.count;i++){
+    posB.setZ(i,-(.024*Math.cos((posB.getX(i)/pw)*Math.PI)+.008*Math.sin((posB.getY(i)/ph+.5)*Math.PI)));
+  }
+  posB.needsUpdate=true;pgBack.computeVertexNormals();
+  const backCv=document.createElement('canvas');backCv.width=512;backCv.height=1024;
+  drawScrollBack(backCv,512,1024);
+  const backTex=new THREE.CanvasTexture(backCv);
+  const backMesh=new THREE.Mesh(pgBack,new THREE.MeshStandardMaterial({map:backTex,roughness:.9,metalness:0}));
+  backMesh.rotation.y=Math.PI;backMesh.position.z=-.003;
+  scrollGroup.add(backMesh);
+
   const silkH=.18,silkG=new THREE.PlaneGeometry(pw,silkH,8,2);
-  const silkM=new THREE.MeshStandardMaterial({color:new THREE.Color(SILK_COLORS[curSilk].hex),roughness:.55,metalness:0});
+  const silkM=new THREE.MeshStandardMaterial({color:new THREE.Color(SILK_COLORS[curSilk].hex),roughness:.55,metalness:0,side:THREE.DoubleSide});
   silkTopMesh=new THREE.Mesh(silkG,silkM.clone());silkTopMesh.position.set(0,ph/2+silkH/2+.001,.001);
   silkBotMesh=new THREE.Mesh(silkG,silkM.clone());silkBotMesh.position.set(0,-(ph/2+silkH/2+.001),.001);
   scrollGroup.add(silkTopMesh,silkBotMesh);
@@ -611,10 +626,46 @@ function buildScrollMesh(){
 }
 
 function buildPaintMat(){
-  if(!curPainting)return new THREE.MeshStandardMaterial({color:0xf0e8d4,roughness:.8,metalness:0});
+  if(!curPainting)return new THREE.MeshStandardMaterial({color:0xf0e8d4,roughness:.82,metalness:0});
   const cv=document.createElement('canvas');cv.width=512;cv.height=1024;curPainting.fn(cv,512,1024);
   const tex=new THREE.CanvasTexture(cv);tex.anisotropy=threeRenderer?threeRenderer.capabilities.getMaxAnisotropy():8;
   return new THREE.MeshStandardMaterial({map:tex,roughness:.82,metalness:0});
+}
+
+// Draws the reverse side of the scroll — aged paper with subtle grain and mounting marks
+function drawScrollBack(cv,w,h){
+  const c=cv.getContext('2d');
+  // Aged washi paper base
+  const bg=c.createRadialGradient(w*.5,h*.5,0,w*.5,h*.5,h*.7);
+  bg.addColorStop(0,'#ede4cc');bg.addColorStop(.6,'#e0d4b0');bg.addColorStop(1,'#d4c49a');
+  c.fillStyle=bg;c.fillRect(0,0,w,h);
+  // Paper fiber texture — fine horizontal lines
+  c.strokeStyle='rgba(160,140,100,.06)';c.lineWidth=1;
+  for(let y=0;y<h;y+=3){c.beginPath();c.moveTo(0,y+Math.random()*.5);c.lineTo(w,y+Math.random()*.5);c.stroke();}
+  // Subtle vertical grain
+  c.strokeStyle='rgba(140,120,80,.04)';c.lineWidth=1;
+  for(let x=0;x<w;x+=8){c.beginPath();c.moveTo(x+Math.random()*2,0);c.lineTo(x+Math.random()*2,h);c.stroke();}
+  // Corner age spots
+  [[0,0],[w,0],[0,h],[w,h]].forEach(([cx,cy])=>{
+    const rg=c.createRadialGradient(cx,cy,0,cx,cy,w*.4);
+    rg.addColorStop(0,'rgba(100,80,40,.12)');rg.addColorStop(1,'rgba(100,80,40,0)');
+    c.fillStyle=rg;c.fillRect(0,0,w,h);
+  });
+  // Thin mounting border line
+  c.strokeStyle='rgba(120,100,60,.25)';c.lineWidth=2;c.strokeRect(w*.04,h*.025,w*.92,h*.95);
+  c.strokeStyle='rgba(120,100,60,.12)';c.lineWidth=1;c.strokeRect(w*.06,h*.035,w*.88,h*.93);
+  // Small storage label area — light rectangle
+  c.fillStyle='rgba(255,245,220,.55)';c.fillRect(w*.3,h*.44,w*.4,h*.12);
+  c.strokeStyle='rgba(120,100,60,.2)';c.lineWidth=1;c.strokeRect(w*.3,h*.44,w*.4,h*.12);
+  // Faint vertical kanji label
+  c.font=`${w*.042}px 'Noto Serif JP',serif`;c.fillStyle='rgba(60,45,20,.35)';c.textAlign='center';
+  ['掛','け','軸'].forEach((ch,i)=>{c.fillText(ch,w*.5,h*.48+i*(h*.038));});
+  // Age foxing dots
+  for(let i=0;i<28;i++){
+    const fx=Math.random()*w,fy=Math.random()*h,fr=.5+Math.random()*2.5;
+    c.beginPath();c.arc(fx,fy,fr,0,Math.PI*2);
+    c.fillStyle=`rgba(100,75,35,${.04+Math.random()*.1})`;c.fill();
+  }
 }
 function buildRollerMat(){
   const r=ROLLER_COLORS[curRoller];
@@ -666,7 +717,9 @@ function updateScrollVisuals(){
   paintingMesh.material=buildPaintMat();
   const rm=buildRollerMat();rollerTopMesh.material=rm;rollerBotMesh.material=rm.clone();
   const cc=new THREE.Color(CAP_COLORS[curCap].hex);capMeshes.forEach(m=>{m.material.color=cc;});
-  const sc=new THREE.Color(SILK_COLORS[curSilk].hex);silkTopMesh.material.color=sc;silkBotMesh.material.color=sc;
+  const sc=new THREE.Color(SILK_COLORS[curSilk].hex);
+  silkTopMesh.material.color=sc;silkTopMesh.material.side=THREE.DoubleSide;
+  silkBotMesh.material.color=sc;silkBotMesh.material.side=THREE.DoubleSide;
 }
 
 function animateThree(){
@@ -675,19 +728,46 @@ function animateThree(){
   if(autoRotating)targetRotY+=.55*dt;
   currentRotY+=(targetRotY-currentRotY)*.075;
   currentRotX+=(targetRotX-currentRotX)*.075;
+  currentZoom+=(targetZoom-currentZoom)*.09;
+  threeCamera.position.z=currentZoom;
   if(scrollGroup){scrollGroup.rotation.y=currentRotY;scrollGroup.rotation.x=currentRotX;scrollGroup.position.y=Math.sin(now*.00078)*.022;}
   threeRenderer.render(threeScene,threeCamera);
 }
 
-// ─── DRAG ────────────────────────────────────────────────────────────────
+// ─── DRAG + ZOOM ──────────────────────────────────────────────────────────
 const tc=document.getElementById('three-canvas');
+let lastPinchDist=0,isPinching=false,touchX=0,touchY=0;
+
 tc.addEventListener('mousedown',e=>{isDrag=true;prevMX=e.clientX;prevMY=e.clientY;document.getElementById('scene-hint').classList.add('hide');});
 document.addEventListener('mousemove',e=>{if(!isDrag)return;targetRotY+=(e.clientX-prevMX)*.008;targetRotX+=(e.clientY-prevMY)*.004;targetRotX=Math.max(-.58,Math.min(.58,targetRotX));prevMX=e.clientX;prevMY=e.clientY;});
 document.addEventListener('mouseup',()=>isDrag=false);
-tc.addEventListener('touchstart',e=>{isDrag=true;touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;document.getElementById('scene-hint').classList.add('hide');},{passive:true});
-document.addEventListener('touchmove',e=>{if(!isDrag)return;targetRotY+=(e.touches[0].clientX-touchX)*.008;targetRotX+=(e.touches[0].clientY-touchY)*.004;targetRotX=Math.max(-.58,Math.min(.58,targetRotX));touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;},{passive:true});
-document.addEventListener('touchend',()=>isDrag=false);
-tc.addEventListener('wheel',e=>{threeCamera.position.z+=e.deltaY*.003;threeCamera.position.z=Math.max(1.8,Math.min(6.5,threeCamera.position.z));},{passive:true});
+
+// Mouse wheel zoom — smooth
+tc.addEventListener('wheel',e=>{
+  e.preventDefault();
+  targetZoom+=e.deltaY*.004;
+  targetZoom=Math.max(2,Math.min(7,targetZoom));
+},{passive:false});
+
+// Touch — drag + pinch zoom
+tc.addEventListener('touchstart',e=>{
+  document.getElementById('scene-hint').classList.add('hide');
+  if(e.touches.length===1){isDrag=true;isPinching=false;touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;}
+  else if(e.touches.length===2){
+    isDrag=false;isPinching=true;
+    lastPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+  }
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  if(e.touches.length===1&&isDrag&&!isPinching){
+    targetRotY+=(e.touches[0].clientX-touchX)*.008;targetRotX+=(e.touches[0].clientY-touchY)*.004;
+    targetRotX=Math.max(-.58,Math.min(.58,targetRotX));touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;
+  } else if(e.touches.length===2&&isPinching){
+    const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    targetZoom+=(lastPinchDist-dist)*.012;targetZoom=Math.max(2,Math.min(7,targetZoom));lastPinchDist=dist;
+  }
+},{passive:true});
+document.addEventListener('touchend',e=>{if(e.touches.length<2)isPinching=false;if(e.touches.length===0)isDrag=false;},{passive:true});
 
 // ─── CAMERA ─────────────────────────────────────────────────────────────
 function toggleAutoRotate(){
@@ -697,7 +777,7 @@ function toggleAutoRotate(){
   // Update label keeping the dot span
   btn.innerHTML=`<span class="dot"></span> ${autoRotating?'↻ Rotating  ON':'↻ Auto Rotate'}`;
 }
-function resetCamera(){targetRotY=0;targetRotX=.06;threeCamera.position.set(0,0,3.6);}
+function resetCamera(){targetRotY=0;targetRotX=.06;targetZoom=4.5;}
 function setView(v){
   // front = face-on
   // side = 90° to see roller ends
@@ -716,7 +796,7 @@ function openViewer(id){
   if(!threeRenderer)setTimeout(initThree,60);
   else{buildScrollMesh();updateScrollVisuals();}
   // Reset auto-rotate button
-  autoRotating=false;
+  autoRotating=false;targetZoom=4.5;currentZoom=4.5;
   const btn=document.getElementById('btn-auto');btn.classList.remove('on');btn.innerHTML='<span class="dot"></span> ↻ Auto Rotate';
 }
 document.getElementById('v-close').addEventListener('click',()=>{
